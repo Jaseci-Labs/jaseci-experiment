@@ -4,7 +4,13 @@ import config
 from util import port_fowrward, authenticate
 
 # Port forward
-port_fowrward()
+# run until portforward is successful
+while True:
+    try:
+        port_fowrward()
+        break
+    except:
+        pass
 
 # Authenticate
 token = authenticate()
@@ -14,7 +20,7 @@ payload = {
     "test": "synthetic_apps",
     "experiment": "discussion_analysis",
     "mem": 4,
-    "policy": "all_remote",
+    "policy": "action_pressure",
 }
 headers = {"content-type": "application/json", "Authorization": f"Token {token}"}
 res = requests.post(

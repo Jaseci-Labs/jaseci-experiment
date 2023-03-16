@@ -193,6 +193,11 @@ class JsorcLoadTest:
                         for module in action_modules:
                             self.load_action_config("jac_nlp.config", module)
                             self.load_action(module, "remote", wait_for_ready=True)
+                    elif policy == "action_pressure":
+                        jsorc_policy = "Action_Pressure"
+                        for module in action_modules:
+                            self.load_action_config("jac_nlp.config", module)
+                            self.load_action(module, "remote", wait_for_ready=True)
                     else:
                         logger.error(f"Unrecognized policy {policy}")
                         return

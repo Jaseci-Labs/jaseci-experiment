@@ -3,5 +3,5 @@ kind: Cluster
 nodes:
   - role: control-plane
     extraMounts:
-      - hostPath: /home/ubuntu/jaseci-experiment/
+      - hostPath: /home/ubuntu/chandra/research/jaseci-experiment/
         containerPath: /jaseci-experiment

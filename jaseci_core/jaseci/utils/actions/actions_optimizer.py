@@ -20,7 +20,7 @@ import time
 
 from .actions_state import ActionsState
 
-POLICIES = ["Default", "Evaluation"]
+POLICIES = ["Default", "Evaluation", "Action_Pressure"]
 THRESHOLD = 0.2
 
 
@@ -258,6 +258,8 @@ class ActionsOptimizer:
             return
         elif self.policy == "Evaluation":
             self._actionpolicy_evaluation()
+        elif self.policy == "Action_Pressure":
+            self._actionpolicy_action_pressure()
 
         if len(self.actions_change) > 0:
             self.apply_actions_change()
@@ -445,6 +447,62 @@ class ActionsOptimizer:
                 self.benchmark["requests"] = {}
 
         self.policy_state["Evaluation"] = policy_state
+
+    def _actionpolicy_action_pressure(self):
+        logger.info("===Pressure Based Policy===")
+        try:
+            pressure = self._calculate_pressure()
+            logger.info(f"Pressure: {pressure}")
+            # sort using the frequency of the action/module
+            pressure = {
+                k: {
+                    k1: v1
+                    for k1, v1 in sorted(
+                        v.items(), key=lambda item: item[1]["freq"], reverse=True
+                    )
+                }
+                for k, v in pressure.items()
+            }
+            avg_module_freq = (
+                sum([x["freq"] for x in pressure["modules"].values()])
+                / len(pressure["modules"])
+                if len(pressure["modules"])
+                else 0
+            )
+            logger.info(f"Average module frequency: {avg_module_freq}")
+        except ZeroDivisionError as e:
+            logger.error(f"Error calculating pressure: {e}")
+
+    def _calculate_pressure(self):
+        """
+        Calculate the action/module pressure for each action/module based on the action call frequency and timeelapsed
+        """
+        pressure = {
+            "actions": {},
+            "modules": {},
+        }
+        modules = set([x.split(".")[0] for x in self.actions_calls.keys()])
+        logger.info(f"Modules: {modules}")
+        for action, time_elapsed in self.actions_calls.items():
+            pressure["actions"][action] = {}
+            pressure["actions"][action]["freq"] = len(time_elapsed)
+            pressure["actions"][action]["avg_latency"] = (
+                sum(time_elapsed) / len(time_elapsed) if len(time_elapsed) else 0
+            )
+        for module in modules:
+            pressure["modules"][module] = {}
+            module_time_elapsed = []
+            for action, time_elapsed in self.actions_calls.items():
+                if action.startswith(module):
+                    module_time_elapsed.extend(time_elapsed)
+            pressure["modules"][module]["freq"] = len(module_time_elapsed)
+            pressure["modules"][module]["avg_latency"] = (
+                sum(module_time_elapsed) / len(module_time_elapsed)
+                if len(module_time_elapsed)
+                else 0
+            )
+
+        return pressure
 
     def _get_action_change(self, new_action_state):
         """
