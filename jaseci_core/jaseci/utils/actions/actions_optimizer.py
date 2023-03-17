@@ -449,29 +449,56 @@ class ActionsOptimizer:
         self.policy_state["Evaluation"] = policy_state
 
     def _actionpolicy_action_pressure(self):
+        # TODO: Use the latenct of modules to determine which modules to move to local/remote
         logger.info("===Pressure Based Policy===")
-        try:
-            pressure = self._calculate_pressure()
-            logger.info(f"Pressure: {pressure}")
-            # sort using the frequency of the action/module
-            pressure = {
-                k: {
-                    k1: v1
-                    for k1, v1 in sorted(
-                        v.items(), key=lambda item: item[1]["freq"], reverse=True
-                    )
-                }
-                for k, v in pressure.items()
+
+        # calculate the pressure for each action/module
+        pressure = self._calculate_pressure()
+        logger.info(f"Pressure: {pressure}")
+        # sort using the frequency of the action/module
+        pressure = {
+            k: {
+                k1: v1
+                for k1, v1 in sorted(
+                    v.items(), key=lambda item: item[1]["freq"], reverse=True
+                )
             }
-            avg_module_freq = (
-                sum([x["freq"] for x in pressure["modules"].values()])
-                / len(pressure["modules"])
-                if len(pressure["modules"])
-                else 0
-            )
-            logger.info(f"Average module frequency: {avg_module_freq}")
-        except ZeroDivisionError as e:
-            logger.error(f"Error calculating pressure: {e}")
+            for k, v in pressure.items()
+        }
+        avg_module_freq = (
+            sum([x["freq"] for x in pressure["modules"].values()])
+            / len(pressure["modules"])
+            if len(pressure["modules"])
+            else 0
+        )
+        logger.info(f"Average module frequency: {avg_module_freq}")
+
+        # getting the modules that need to be moved to local/remote
+        to_local_modules = [
+            k for k, v in pressure["modules"].items() if v["freq"] > avg_module_freq
+        ]
+        to_remote_modules = [
+            k for k, v in pressure["modules"].items() if v["freq"] <= avg_module_freq
+        ]
+        logger.info(
+            f"Modules to local: {to_local_modules} | Modules to remote: {to_remote_modules}"
+        )
+
+        new_config = {}
+        current_config = self.actions_state.get_all_state()
+        logger.info(f"Current config: {current_config}")
+        for module, module_state in current_config.items():
+            if module in to_local_modules:
+                new_config[module] = {"mode": "local"}
+            elif module in to_remote_modules:
+                new_config[module] = {"mode": "remote"}
+            else:
+                new_config[module] = {"mode": module_state["mode"]}
+        logger.info(f"New config: {new_config}")
+        if new_config != current_config:
+            self.actions_change = self._get_action_change(new_config)
+        else:
+            logger.info("No change in config")
 
     def _calculate_pressure(self):
         """
