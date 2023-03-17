@@ -139,7 +139,10 @@ class JsOrcApi:
         Return the current status of the action.
         """
         action_manager = JsOrc.get("action_manager", ActionManager)
+        logger.info(f"load_actions {name},{mode}")
+        print(f"load_actions {name},{mode}")
         action_manager.load_actions(name, mode)
+
         status = action_manager.get_actions_status(name)
 
         return {"success": True, "action_status": status}

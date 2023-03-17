@@ -3,7 +3,7 @@ import json
 import config
 from util import port_fowrward, authenticate
 
-# Port forward
+# # Port forward
 port_fowrward()
 
 # Authenticate
@@ -14,7 +14,7 @@ payload = {
     "test": "synthetic_apps",
     "experiment": "discussion_analysis",
     "mem": 4,
-    "policy": "all_remote",
+    "policy": "evaluation",
 }
 headers = {"content-type": "application/json", "Authorization": f"Token {token}"}
 res = requests.post(

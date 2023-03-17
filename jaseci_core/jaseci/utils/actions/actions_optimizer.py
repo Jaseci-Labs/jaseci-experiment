@@ -137,23 +137,32 @@ class ActionsOptimizer:
         """
         Load an action module
         """
+        logger.info(f"in action optimizer module : {name}")
         cur_state = self.actions_state.get_state(name)
         if cur_state is None:
             cur_state = self.actions_state.init_state(name)
 
         if cur_state["mode"] == "module":
             # Check if there is already a local action loaded
+            logger.info(f"in action optimizer module cur_state : {cur_state['mode']}")
             return
 
         if name not in action_configs:
+            load_module_actions(name, None)
+            logger.info(f"in action optimizer action_configs : {action_configs}")
             return
 
         module = action_configs[name]["module"]
         loaded_module = action_configs[name]["loaded_module"]
         if unload_existing:
             self.unload_action_remote(name)
-
-        load_module_actions(module, loaded_module)
+        logger.info(f"==========================in load module ===============================")
+        logger.info(f"{module} , {loaded_module}")
+        logger.info(f"==========================in load module ===============================")
+        try:
+            load_module_actions(module, loaded_module)
+        except Exception as e:
+            logger.error(f"Exception occured in load module : {e}")
         self.action_prep(name)
         self.actions_state.module_action_loaded(name, module, loaded_module)
 
@@ -293,7 +302,7 @@ class ActionsOptimizer:
         """
         logger.info("===Evaluation Policy===")
         policy_state = self.policy_state["Evaluation"]
-
+        last_eval_config=None
         if len(policy_state) == 0:
             # Initialize policy tracking state
             policy_state = {
@@ -362,14 +371,24 @@ class ActionsOptimizer:
                             continue
                         else:
                             walker_runs.extend(times)
-
+                    # print("+++++++++++++++++++++++++++++++++++++++++++++++++++++")
+                    # print(f"Walker RUN : \n{walker_runs}")
+                    # print("+++++++++++++++++++++++++++++++++++++++++++++++++++++")
+                    # print(f"BenchMark : \n{self.benchmark['requests']}")
+                    # print("+++++++++++++++++++++++++++++++++++++++++++++++++++++")
+                    # print(f"Action Calls : \n{self.actions_calls}")
+                    # print("+++++++++++++++++++++++++++++++++++++++++++++++++++++")
+                    # print(f"Action Summary : \n{self.actions_summary}")
+                    # print("+++++++++++++++++++++++++++++++++++++++++++++++++++++")
+                    # print(f"Action History : \n{self.actions_history}")
+                    # print("+++++++++++++++++++++++++++++++++++++++++++++++++++++")
                     avg_walker_lat = sum(walker_runs) / len(walker_runs)
                     policy_state["cur_config"]["avg_walker_lat"] = avg_walker_lat
                     policy_state["past_configs"].append(policy_state["cur_config"])
                     logger.info(
                         f"===Evaluation Policy=== Complete evaluation period for {policy_state['cur_config']} latency: {avg_walker_lat}"
                     )
-
+                    # print(walker_run)
                     # check if all configs have been evaluated
                     if len(policy_state["remain_configs"]) == 0:
                         # best config is the one with the fastest walker latency during the evaluation period
@@ -377,33 +396,69 @@ class ActionsOptimizer:
                         best_config = min(
                             policy_state["past_configs"],
                             key=lambda x: x["avg_walker_lat"],
-                        )
+                        )                            
+                        # print(best_config)
+                        # print(policy_state["prev_best_config"])
+                        # print(policy_state["past_configs"])
+                        prev_best_config=None
+                        for config in policy_state["past_configs"]:
+                            if all(
+                                [
+                                    config[act]
+                                    == policy_state["prev_best_config"][act]["mode"]
+                                    for act in config.keys()
+                                    if act in action_configs.keys()
+                                ]
+                            ):
+                                prev_best_config=config
                         # caluculate the decrease in % for the new configuration
                         lat_decrease_pct = (
-                            policy_state["prev_best_config"]["avg_walker_lat"]
+                            prev_best_config["avg_walker_lat"]
                             - best_config["avg_walker_lat"]
-                        ) / policy_state["prev_best_config"]["avg_walker_lat"]
+                        ) / prev_best_config["avg_walker_lat"]
                         # Switch the system to the best config
                         del best_config["avg_walker_lat"]
                         self.actions_change = self._get_action_change(best_config)
-
+                        logger.info("=======================================================")
+                        logger.info(f"last_eval config outside pref double  :\n{last_eval_config}")
+                        logger.info("=======================================================")
+                        if last_eval_config is None:
+                            logger.info("=======================================================")
+                            logger.info(f"last_eval config inside pref double  :\n{last_eval_config}")
+                            logger.info("=======================================================")
+                            logger.info(f"""lat_decrease_pct inside pref double  :\n{lat_decrease_pct} \n config state : {all(
+                                        [
+                                            best_config[act]
+                                            == policy_state['prev_best_config'][act]['mode']
+                                            for act in best_config.keys()
+                                            if act in action_configs.keys()
+                                        ]
+                                    )}""")
+                            logger.info(f"best_config : {best_config}\nprev_best_config : {policy_state['prev_best_config']}")
                         # ADAPTIVE: if the selected best config is the same config as the previous best one, double the performance period
-                        if (
-                            all(
-                                [
-                                    best_config[act]
-                                    == policy_state["prev_best_config"][act]["mode"]
-                                    for act in best_config.keys()
-                                    if act in action_configs.keys()
-                                ]
-                            )
-                            and lat_decrease_pct > THRESHOLD
-                        ):
-                            policy_state["perf_phase"] *= 2
-                            logger.info(
-                                f"===Evaluation Policy=== Best config is the same as previous one. Doubling performance phase to {policy_state['perf_phase']}"
-                            )
-
+                            if (
+                                    all(
+                                        [
+                                            best_config[act]
+                                            == policy_state["prev_best_config"][act]["mode"]
+                                            for act in best_config.keys()
+                                            if act in action_configs.keys()
+                                        ]
+                                    )
+                                    and lat_decrease_pct > THRESHOLD
+                                ):
+                                    
+                                    policy_state["perf_phase"] *= 2
+                                    logger.info(
+                                        f"===Evaluation Policy=== Best config is the same as previous one. Doubling performance phase to {policy_state['perf_phase']}"
+                                    )  
+                        else:
+                            logger.info("=======================================================")
+                            logger.info(f"last_eval config else  :\n{last_eval_config}")
+                            logger.info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+                            logger.info(f"past_configs config  :\n{policy_state['past_configs']}")
+                            logger.info("=======================================================")
+                        last_eval_config=policy_state["past_configs"]
                         policy_state["phase"] = "perf"
                         policy_state["cur_config"] = None
                         policy_state["past_configs"] = []

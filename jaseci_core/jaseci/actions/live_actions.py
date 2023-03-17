@@ -11,7 +11,7 @@ import sys
 import inspect
 import importlib
 import gc
-
+import traceback
 live_actions = {}  # {"act.func": func_obj, ...}
 live_action_modules = {}  # {__module__: ["act.func1", "act.func2", ...], ...}
 action_configs = {}  # {"module_name": {}, ...}
@@ -112,8 +112,8 @@ def load_module_actions(mod, loaded_module=None):
         mod = importlib.import_module(mod)
         if mod:
             return True
-    except Exception:
-        logger.error(f"Cannot hot load module actions from {mod}.")
+    except Exception as e:
+        logger.error(f"Cannot hot load module actions from {mod}, exception :{e}, stack_trace {traceback.print_exc()}")
 
     return False
 
@@ -122,7 +122,9 @@ def load_action_config(config, module_name):
     """
     Load the action config of a jaseci action module
     """
-
+    logger.info(f"==========================in load_action_config ===============================")
+    logger.info(f"{config} , {module_name}")
+    logger.info(f"==========================in load_action_config ===============================")
     loaded_configs = importlib.import_module(config).ACTION_CONFIGS
     if module_name and module_name in loaded_configs:
         action_configs[module_name] = loaded_configs[module_name]

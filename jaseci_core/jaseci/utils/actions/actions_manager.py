@@ -2,7 +2,7 @@ from jaseci import JsOrc
 from jaseci.svc.prome_svc import PrometheusService
 from jaseci.actions.live_actions import load_action_config
 from .actions_optimizer import ActionsOptimizer
-
+from jaseci.utils.utils import logger
 import time
 import numpy as np
 
@@ -42,6 +42,7 @@ class ActionManager:
 
         if mode == "module":
             self.actions_optimizer.load_action_module(name)
+            logger.info("in action manager module")
         elif mode == "remote":
             self.actions_optimizer.load_action_remote(name)
 

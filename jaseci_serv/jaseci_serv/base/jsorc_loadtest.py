@@ -137,6 +137,9 @@ class JsorcLoadTest:
 
     def load_action_config(self, action_pkg, action_module):
         """ """
+        logger.info(f"==========================in load_action_config loadtest ===============================")
+        logger.info(f"{action_pkg} , {action_module}")
+        logger.info(f"==========================in load_action_config loadtest ===============================")
         payload = {
             "op": "jsorc_actions_config",
             "config": action_pkg,
@@ -189,6 +192,7 @@ class JsorcLoadTest:
                             self.load_action(module, "remote", wait_for_ready=True)
                     elif policy == "evaluation":
                         jsorc_policy = "Evaluation"
+                        logger.info(f"in Evaluation block {action_modules}")
                         # For JSORC mode, we start as remote everything
                         for module in action_modules:
                             self.load_action_config("jac_nlp.config", module)
