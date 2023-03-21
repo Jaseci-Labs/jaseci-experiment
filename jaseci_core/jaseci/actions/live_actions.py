@@ -95,19 +95,25 @@ def load_local_actions(file: str):
 
 def load_module_actions(mod, loaded_module=None):
     """Load all jaseci actions from python module"""
+    # logger.info("in load_module_actions")
+    # logger.info(mod)
+    # logger.info(loaded_module)
     try:
         if mod in sys.modules:
             del sys.modules[mod]
         if loaded_module and loaded_module in sys.modules:
             del sys.modules[loaded_module]
-        if mod in live_action_modules:
-            for i in live_action_modules[mod]:
-                if i in live_actions:
-                    del live_actions[i]
-        if loaded_module in live_action_modules:
-            for i in live_action_modules[loaded_module]:
-                if i in live_actions:
-                    del live_actions[i]
+
+        #if mod in live_action_modules:
+        #    for i in live_action_modules[mod]:
+        #        if i in live_actions:
+        #            del live_actions[i]
+
+ 
+        #if loaded_module in live_action_modules:
+        #    for i in live_action_modules[loaded_module]:
+        #        if i in live_actions:
+        #            del live_actions[i]
 
         mod = importlib.import_module(mod)
         if mod:
@@ -122,9 +128,9 @@ def load_action_config(config, module_name):
     """
     Load the action config of a jaseci action module
     """
-    logger.info(f"==========================in load_action_config ===============================")
-    logger.info(f"{config} , {module_name}")
-    logger.info(f"==========================in load_action_config ===============================")
+    # logger.info(f"==========================in load_action_config ===============================")
+    # logger.info(f"{config} , {module_name}")
+    # logger.info(f"==========================in load_action_config ===============================")
     loaded_configs = importlib.import_module(config).ACTION_CONFIGS
     if module_name and module_name in loaded_configs:
         action_configs[module_name] = loaded_configs[module_name]
@@ -190,8 +196,8 @@ def load_preconfig_actions(hook):
                 load_local_actions(i)
             for i in action_preload["remote"]:
                 load_remote_actions(i)
-            for i in action_preload["module"]:
-                load_module_actions(i)
+            #for i in action_preload["module"]:
+            #    load_module_actions(i)
         except Exception:
             pass
 

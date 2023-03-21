@@ -137,23 +137,29 @@ class ActionsOptimizer:
         """
         Load an action module
         """
+        logger.info(f"loading action module {name}")
         cur_state = self.actions_state.get_state(name)
+        logger.info(cur_state)
         if cur_state is None:
             cur_state = self.actions_state.init_state(name)
 
         if cur_state["mode"] == "module":
+            logger.info("ALREADY A MODULE LOADED")
             # Check if there is already a local action loaded
             return
 
         if name not in action_configs:
+            logger.info("name not in action_configs")
             load_module_actions(name, None)
             return
 
         module = action_configs[name]["module"]
         loaded_module = action_configs[name]["loaded_module"]
         if unload_existing:
+            logger.info("unloading existing")
             self.unload_action_remote(name)
         try:
+            logger.info("try loading load module actions")
             load_module_actions(module, loaded_module)
         except Exception as e:
             logger.error(f"Exception occured in load module : {e}")
