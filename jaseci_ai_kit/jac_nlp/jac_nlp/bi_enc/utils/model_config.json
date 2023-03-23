@@ -3,5 +3,6 @@
     "model_name": "prajjwal1/bert-tiny",
     "model_save_path": "modeloutput",
     "loss_function": "mse",
-    "loss_type": "dot"
+    "loss_type": "dot",
+    "local_path": ".jaseci/models/jac_nlp/bi_enc"
 }

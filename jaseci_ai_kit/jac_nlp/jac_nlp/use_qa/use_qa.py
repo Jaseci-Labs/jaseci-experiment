@@ -4,11 +4,31 @@ import tensorflow as tf
 import tensorflow_text  # noqa
 from jaseci.actions.live_actions import jaseci_action
 from typing import Union
+import os
 
 
-module = hub.load(
-    "https://tfhub.dev/google/universal-sentence-encoder-multilingual-qa/3"
-)
+MODULE_URL = "https://tfhub.dev/google/universal-sentence-encoder-multilingual-qa/3"
+
+
+HOME_DIR = os.path.expanduser("~")
+MODEL_DIR = ".jaseci/models/jac_nlp/use_qa"
+MODEL_PATH = os.path.join(HOME_DIR, MODEL_DIR)
+
+
+def setup():
+    """
+    Load Universal Sentence Encoder Multilingual QA model
+    """
+    global module
+    try:
+        module = hub.load(MODEL_PATH)
+    except OSError:
+        os.makedirs(MODEL_PATH, exist_ok=True)
+        module = hub.load(MODULE_URL)
+        tf.saved_model.save(module, MODEL_PATH)
+
+
+setup()
 
 
 @jaseci_action(act_group=["use"], aliases=["enc_question"], allow_remote=True)

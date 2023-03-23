@@ -1,4 +1,5 @@
 {
     "model_name": "distilbert-base-uncased",
-    "model_save_path": "test"
+    "model_save_path": "test",
+    "model_path": ".jaseci/models/jac_nlp/tfm_ner"
 }

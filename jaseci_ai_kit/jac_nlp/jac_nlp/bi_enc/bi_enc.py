@@ -14,11 +14,6 @@ from .utils.evaluate import get_embeddings  # noqa
 from .utils.models import BiEncoder  # noqa
 from .utils.train import train_model  # noqa
 
-
-# device = torch.device("cpu")
-# uncomment this if you wish to use GPU to train
-# this is commented out because this causes issues with
-# unittest on machines with GPU
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
@@ -43,9 +38,22 @@ def setup():
         model_config = json.load(jsonfile)
     with open(t_config_fname, "r") as jsonfile:
         train_config = json.load(jsonfile)
+    HOME_DIR = os.path.expanduser("~")
+    MODEL_DIR = model_config["local_path"]
+    MODEL_PATH = os.path.join(HOME_DIR, MODEL_DIR)
+    os.makedirs(MODEL_PATH, exist_ok=True)
 
+    if all(
+        os.path.isfile(os.path.join(MODEL_PATH, file))
+        for file in ["config.json", "pytorch_model.bin"]
+    ):
+        trf_config = AutoConfig.from_pretrained(MODEL_PATH)
+    else:
+        trf_config = AutoConfig.from_pretrained(model_config["model_name"])
+        model = AutoModel.from_config(trf_config)
+        model.save_pretrained(MODEL_PATH)
+        del model
     train_config.update({"device": device.type})
-    trf_config = AutoConfig.from_pretrained(model_config["model_name"])
     tokenizer = AutoTokenizer.from_pretrained(
         model_config["model_name"], do_lower_case=True, clean_text=False
     )

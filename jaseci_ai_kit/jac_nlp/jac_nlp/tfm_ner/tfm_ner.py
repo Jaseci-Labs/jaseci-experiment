@@ -13,8 +13,10 @@ from .train import (
     train_model,
 )
 import shutil
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
 warnings.filterwarnings("ignore")
+HOME_DIR = os.path.expanduser("~")
 
 
 def config_setup():
@@ -32,8 +34,17 @@ def config_setup():
         train_config = json.load(jsonfile)
     with open(m_config_fname, "r") as jsonfile:
         model_config = json.load(jsonfile)
-
-    curr_model_path = model_config["model_name"]
+    curr_model_path = model_config["model_path"]
+    curr_model_path = os.path.join(HOME_DIR, curr_model_path)
+    os.makedirs(curr_model_path, exist_ok=True)
+    if not os.listdir(curr_model_path):
+        tokenizer = AutoTokenizer.from_pretrained(
+            model_config["model_name"], cache_dir=curr_model_path
+        )
+        model = AutoModelForSequenceClassification.from_pretrained(
+            model_config["model_name"], cache_dir=curr_model_path
+        )
+        del tokenizer, model
 
 
 config_setup()
