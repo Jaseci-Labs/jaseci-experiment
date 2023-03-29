@@ -27,5 +27,5 @@ ACTION_CONFIGS = {
     "use_enc": USE_ENC_ACTION_CONFIG,
     "use_qa": USE_QA_ACTION_CONFIG,
     "zs_classifier": ZS_CLASSIFIER_ACTION_CONFIG,
-    "sentiment": SENTIMENT_ACTION_CONFIG,
+    "sentiment": SENTIMENT_ACTION_CONFIG
 }

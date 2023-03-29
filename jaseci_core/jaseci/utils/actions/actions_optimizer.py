@@ -266,6 +266,8 @@ class ActionsOptimizer:
             # Default policy does not manage action automatically
             return
         elif self.policy == "Evaluation":
+            if "jsorc_benchmark_start" not in self.benchmark["requests"]:
+                return
             self._actionpolicy_evaluation()
 
         if len(self.actions_change) > 0:

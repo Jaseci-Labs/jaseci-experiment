@@ -12,9 +12,9 @@ token = authenticate()
 # Run experiment
 payload = {
     "test": "synthetic_apps",
-    "experiment": "discussion_analysis",
+    "experiment": "weather_and_time_assitance",
     "mem": 4,
-    "policy": "evaluation",
+    "policy": "all_local",
 }
 headers = {"content-type": "application/json", "Authorization": f"Token {token}"}
 res = requests.post(
