@@ -48,10 +48,10 @@ BI_ENC_ACTION_CONFIG = {
                                 "name": "prod-script",
                                 "configMap": {"name": "bi-enc-up", "defaultMode": 420},
                             },
-                            {
-                                "name": "jac-nlp-volume",
-                                "persistentVolumeClaim": {"claimName": "jac-nlp-pvc"},
-                            },
+                            # {
+                            #     "name": "jac-nlp-volume",
+                            #     "persistentVolumeClaim": {"claimName": "jac-nlp-pvc"},
+                            # },
                         ],
                         "containers": [
                             {
