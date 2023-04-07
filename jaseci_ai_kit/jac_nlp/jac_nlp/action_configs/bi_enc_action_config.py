@@ -56,7 +56,7 @@ BI_ENC_ACTION_CONFIG = {
                         "containers": [
                             {
                                 "name": "bi-enc",
-                                "image": "jaseci/jac-nlp:1.4.0.12"",
+                                "image": "jaseci/jac-nlp:1.4.0.12",
                                 "command": ["bash", "-c", "source /script/prod_up"],
                                 "ports": [{"containerPort": 80, "protocol": "TCP"}],
                                 "resources": {
@@ -65,10 +65,10 @@ BI_ENC_ACTION_CONFIG = {
                                 },
                                 "volumeMounts": [
                                     {"name": "prod-script", "mountPath": "/script"},
-                                    {
-                                        "name": "jac-nlp-volume",
-                                        "mountPath": "/root/.jaseci/models/",
-                                    },
+                                    # {
+                                    #     "name": "jac-nlp-volume",
+                                    #     "mountPath": "/root/.jaseci/models/",
+                                    # },
                                 ],
                                 "terminationMessagePath": "/dev/termination-log",
                                 "terminationMessagePolicy": "File",

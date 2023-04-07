@@ -54,12 +54,12 @@ CL_SUMMER_ACTION_CONFIG = {
                         "containers": [
                             {
                                 "name": "cl-summer",
-                                "image": "jaseci/jaseci-experiment:1.4.0.12",
+                                "image": "jaseci/jac-nlp:1.4.0.12",
                                 "command": ["bash", "-c", "source /script/prod_up"],
                                 "ports": [{"containerPort": 80, "protocol": "TCP"}],
                                 "resources": {
-                                    "limits": {"memory": "3Gi"},
-                                    "requests": {"memory": "3Gi"},
+                                    "limits": {"memory": "2Gi"},
+                                    "requests": {"memory": "2Gi"},
                                 },
                                 "volumeMounts": [
                                     {"name": "prod-script", "mountPath": "/script"}
