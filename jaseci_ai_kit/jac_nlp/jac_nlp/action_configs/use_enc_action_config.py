@@ -68,10 +68,10 @@ USE_ENC_ACTION_CONFIG = {
                                 },
                                 "volumeMounts": [
                                     {"name": "prod-script", "mountPath": "/script"},
-                                    {
-                                        "name": "jac-nlp-volume",
-                                        "mountPath": "/root/.jaseci/models/",
-                                    },
+                                    # {
+                                    #     "name": "jac-nlp-volume",
+                                    #     "mountPath": "/root/.jaseci/models/",
+                                    # },
                                 ],
                                 "terminationMessagePath": "/dev/termination-log",
                                 "terminationMessagePolicy": "File",
