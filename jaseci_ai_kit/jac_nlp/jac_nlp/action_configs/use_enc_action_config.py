@@ -51,10 +51,10 @@ USE_ENC_ACTION_CONFIG = {
                                     "defaultMode": 420,
                                 },
                             },
-                            {
-                                "name": "jac-nlp-volume",
-                                "persistentVolumeClaim": {"claimName": "jac-nlp-pvc"},
-                            },
+                            # {
+                            #     "name": "jac-nlp-volume",
+                            #     "persistentVolumeClaim": {"claimName": "jac-nlp-pvc"},
+                            # },
                         ],
                         "containers": [
                             {
