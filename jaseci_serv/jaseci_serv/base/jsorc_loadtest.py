@@ -267,11 +267,11 @@ class JsorcLoadTest:
                                 package, module = module.split(".")
                                 self.unload_action(module, mode="auto", retire_svc=True)
                         sleep(10)
-            self.set_jsorc_actionpolicy("Default", policy_params={})
-            path = "/root/.jaseci/exp_results/"
+            self.set_jsorc_actionpolicy("Default", policy_params={}) 
+            path = "/root/.jaseci/models/exp_results/"
             os.makedirs(path, exist_ok=True)
             with open(f"{path}/{app}_{policy}.json", "w") as fp:
                 json.dump(results, fp)
             return results
         except Exception as e:
-            return f"Exception: {e}"
+            return f"Exception Occured: {e}"
