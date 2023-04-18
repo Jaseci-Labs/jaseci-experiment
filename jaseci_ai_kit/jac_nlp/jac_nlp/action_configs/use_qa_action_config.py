@@ -26,8 +26,8 @@ USE_QA_ACTION_CONFIG = {
                 "creationTimestamp": None,
             },
             "data": {
-                # "prod_up": "git clone -b asplos https://github.com/Jaseci-Labs/jaseci-experiment.git; cd jaseci-experiment; cd jaseci_core; source install_live.sh; cd ../jaseci_ai_kit/jac_nlp; pip install -e .[use_qa]; uvicorn jac_nlp.use_qa:serv_actions --host 0.0.0.0 --port 80"
-                "prod_up": "uvicorn jac_nlp.use_qa:serv_actions --host 0.0.0.0 --port 80"
+                "prod_up": "git clone -b vm_test https://github.com/Jaseci-Labs/jaseci-experiment.git; cd jaseci-experiment; cd jaseci_core; source install_live.sh; cd ../jaseci_ai_kit/jac_nlp; pip install -e .[use_qa]; uvicorn jac_nlp.use_qa:serv_actions --host 0.0.0.0 --port 80"
+                # "prod_up": "uvicorn jac_nlp.use_qa:serv_actions --host 0.0.0.0 --port 80"
             },
         },
         "Deployment": {
@@ -52,10 +52,10 @@ USE_QA_ACTION_CONFIG = {
                                     "defaultMode": 420,
                                 },
                             },
-                            {
-                                "name": "jac-nlp-volume",
-                                "persistentVolumeClaim": {"claimName": "jac-nlp-pvc"},
-                            },
+                            # {
+                            #     "name": "jac-nlp-volume",
+                            #     "persistentVolumeClaim": {"claimName": "jac-nlp-pvc"},
+                            # },
                         ],
                         "containers": [
                             {
@@ -69,10 +69,10 @@ USE_QA_ACTION_CONFIG = {
                                 },
                                 "volumeMounts": [
                                     {"name": "prod-script", "mountPath": "/script"},
-                                    {
-                                        "name": "jac-nlp-volume",
-                                        "mountPath": "/root/.jaseci/models/",
-                                    },
+                                    # {
+                                    #     "name": "jac-nlp-volume",
+                                    #     "mountPath": "/root/.jaseci/models/",
+                                    # },
                                 ],
                                 "terminationMessagePath": "/dev/termination-log",
                                 "terminationMessagePolicy": "File",

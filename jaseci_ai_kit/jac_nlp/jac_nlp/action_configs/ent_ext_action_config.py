@@ -48,10 +48,10 @@ ENT_EXT_ACTION_CONFIG = {
                                 "name": "prod-script",
                                 "configMap": {"name": "ent-ext-up", "defaultMode": 420},
                             },
-                            {
-                                "name": "jac-nlp-volume",
-                                "persistentVolumeClaim": {"claimName": "jac-nlp-pvc"},
-                            },
+                            # {
+                            #     "name": "jac-nlp-volume",
+                            #     "persistentVolumeClaim": {"claimName": "jac-nlp-pvc"},
+                            # },
                         ],
                         "containers": [
                             {
@@ -65,10 +65,10 @@ ENT_EXT_ACTION_CONFIG = {
                                 },
                                 "volumeMounts": [
                                     {"name": "prod-script", "mountPath": "/script"},
-                                    {
-                                        "name": "jac-nlp-volume",
-                                        "mountPath": "/root/.jaseci/models/",
-                                    },
+                                    # {
+                                    #     "name": "jac-nlp-volume",
+                                    #     "mountPath": "/root/.jaseci/models/",
+                                    # },
                                 ],
                                 "terminationMessagePath": "/dev/termination-log",
                                 "terminationMessagePolicy": "File",
